@@ -10,29 +10,73 @@
 </head>
 <body>
 
-  <!-- ==================== LOGIN ==================== -->
+  <!-- ==================== LOGIN / REGISTRO ==================== -->
   <section id="login-section" class="d-flex align-items-center justify-content-center min-vh-100">
     <div class="card shadow login-card">
       <div class="card-body p-4">
         <h2 class="card-title text-center mb-4">
           <i class="fa-solid fa-check-circle text-primary me-2"></i>TodoList
         </h2>
-        <div id="login-error" class="alert alert-danger d-none"></div>
-        <form id="login-form" novalidate>
-          <div class="mb-3">
-            <label for="input-username" class="form-label">Usuario</label>
-            <input type="text" class="form-control" id="input-username"
-                   placeholder="pepe" autocomplete="username" required />
-          </div>
-          <div class="mb-3">
-            <label for="input-password" class="form-label">Contraseña</label>
-            <input type="password" class="form-control" id="input-password"
-                   placeholder="••••••" autocomplete="current-password" required />
-          </div>
-          <button type="submit" class="btn btn-primary w-100" id="btn-login">
-            Iniciar sesión
-          </button>
-        </form>
+
+        <!-- Formulario de login -->
+        <div id="panel-login">
+          <div id="login-error" class="alert alert-danger d-none"></div>
+          <form id="login-form" novalidate>
+            <div class="mb-3">
+              <label for="input-username" class="form-label">Usuario</label>
+              <input type="text" class="form-control" id="input-username"
+                     placeholder="pepe" autocomplete="username" required />
+            </div>
+            <div class="mb-3">
+              <label for="input-password" class="form-label">Contraseña</label>
+              <input type="password" class="form-control" id="input-password"
+                     placeholder="••••••" autocomplete="current-password" required />
+            </div>
+            <button type="submit" class="btn btn-primary w-100" id="btn-login">
+              Iniciar sesión
+            </button>
+          </form>
+          <p class="text-center mt-3 mb-0 small">
+            ¿No tienes cuenta?
+            <a href="#" id="btn-show-register">Regístrate</a>
+          </p>
+        </div>
+
+        <!-- Formulario de registro -->
+        <div id="panel-register" class="d-none">
+          <div id="register-error" class="alert alert-danger d-none"></div>
+          <div id="register-success" class="alert alert-success d-none"></div>
+          <form id="register-form" novalidate>
+            <div class="mb-3">
+              <label for="reg-username" class="form-label">Usuario *</label>
+              <input type="text" class="form-control" id="reg-username"
+                     placeholder="pepe" autocomplete="username" required />
+            </div>
+            <div class="mb-3">
+              <label for="reg-fullname" class="form-label">Nombre completo *</label>
+              <input type="text" class="form-control" id="reg-fullname"
+                     placeholder="Pepe García" required />
+            </div>
+            <div class="mb-3">
+              <label for="reg-email" class="form-label">Email *</label>
+              <input type="email" class="form-control" id="reg-email"
+                     placeholder="pepe@email.com" required />
+            </div>
+            <div class="mb-3">
+              <label for="reg-password" class="form-label">Contraseña *</label>
+              <input type="password" class="form-control" id="reg-password"
+                     placeholder="••••••" minlength="5" required />
+            </div>
+            <button type="submit" class="btn btn-success w-100" id="btn-register">
+              Crear cuenta
+            </button>
+          </form>
+          <p class="text-center mt-3 mb-0 small">
+            ¿Ya tienes cuenta?
+            <a href="#" id="btn-show-login">Inicia sesión</a>
+          </p>
+        </div>
+
       </div>
     </div>
   </section>

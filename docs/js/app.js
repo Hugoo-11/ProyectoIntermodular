@@ -1,12 +1,8 @@
-/* ================================================================
-   CONFIGURACIÓN
-   ================================================================ */
+// --- Configuración ---
 
 const API_BASE = 'https://todo-rest-latest.onrender.com';
 
-/* ================================================================
-   ESTADO
-   ================================================================ */
+// --- Estado de la aplicación ---
 
 const state = {
   auth: null,            // { username, password }
@@ -25,9 +21,7 @@ const state = {
   currentSection: 'tasks'
 };
 
-/* ================================================================
-   AUTENTICACIÓN
-   ================================================================ */
+// --- Autenticación ---
 
 function saveAuth(username, password) {
   state.auth = { username, password };
@@ -50,9 +44,7 @@ function getAuthHeader() {
   return { Authorization: `Basic ${token}` };
 }
 
-/* ================================================================
-   PETICIONES A LA API
-   ================================================================ */
+// --- Peticiones a la API ---
 
 async function request(method, path, body) {
   const options = {
@@ -77,9 +69,7 @@ const api = {
   delete: path        => request('DELETE', path)
 };
 
-/* ================================================================
-   DETECCIÓN DE ROL
-   ================================================================ */
+// --- Detección de rol ---
 
 async function detectRole() {
   try {
@@ -101,9 +91,7 @@ function getCategoryBase() {
   return '/categories';
 }
 
-/* ================================================================
-   NAVEGACIÓN POR SECCIONES
-   ================================================================ */
+// --- Navegación por secciones ---
 
 function showSection(name) {
   const sections = ['tasks', 'dashboard', 'tags', 'profile', 'categories', 'users'];
@@ -142,9 +130,7 @@ function applyRoleUI() {
   }
 }
 
-/* ================================================================
-   TAREAS
-   ================================================================ */
+// --- Tareas ---
 
 async function fetchTasks()       { return api.get('/task'); }
 async function createTask(data)   { return api.post('/task', data); }
@@ -247,9 +233,7 @@ function escapeHtml(text) {
   return div.innerHTML;
 }
 
-/* ================================================================
-   DASHBOARD
-   ================================================================ */
+// --- Dashboard ---
 
 async function loadDashboard() {
   const el = document.getElementById('dashboard-cards');
@@ -278,9 +262,7 @@ async function loadDashboard() {
   }
 }
 
-/* ================================================================
-   ETIQUETAS (TAGS)
-   ================================================================ */
+// --- Etiquetas ---
 
 let tagModal = null;
 
@@ -381,9 +363,7 @@ function handleDeleteTag(id) {
   new bootstrap.Modal(document.getElementById('delete-modal')).show();
 }
 
-/* ================================================================
-   CATEGORÍAS (GESTOR / ADMIN)
-   ================================================================ */
+// --- Categorías ---
 
 let categoryModal = null;
 
@@ -489,9 +469,7 @@ function handleDeleteCategory(id) {
   new bootstrap.Modal(document.getElementById('delete-modal')).show();
 }
 
-/* ================================================================
-   USUARIOS (ADMIN)
-   ================================================================ */
+// --- Usuarios ---
 
 let userModal = null;
 
@@ -625,9 +603,7 @@ function handleDeleteUser(id) {
   new bootstrap.Modal(document.getElementById('delete-modal')).show();
 }
 
-/* ================================================================
-   PERFIL
-   ================================================================ */
+// --- Perfil ---
 
 async function handleChangePassword(e) {
   e.preventDefault();
@@ -663,9 +639,7 @@ async function handleChangePassword(e) {
   }
 }
 
-/* ================================================================
-   MODAL TAREA
-   ================================================================ */
+// --- Modal de tarea ---
 
 let taskModal = null;
 
@@ -746,9 +720,7 @@ function openEditModal(taskId) {
   taskModal.show();
 }
 
-/* ================================================================
-   ALERTAS / UI
-   ================================================================ */
+// --- Alertas y utilidades de UI ---
 
 function showLogin() {
   document.getElementById('login-section').classList.remove('d-none');
@@ -792,9 +764,7 @@ function setLoadingTaskList() {
     </div>`;
 }
 
-/* ================================================================
-   MANEJADORES DE EVENTOS
-   ================================================================ */
+// --- Eventos ---
 
 async function handleLogin(e) {
   e.preventDefault();
@@ -818,6 +788,71 @@ async function handleLogin(e) {
   } finally {
     btn.disabled = false;
     btn.textContent = 'Iniciar sesión';
+  }
+}
+
+function handleShowRegister(e) {
+  e.preventDefault();
+  document.getElementById('panel-login').classList.add('d-none');
+  document.getElementById('panel-register').classList.remove('d-none');
+  document.getElementById('register-form').reset();
+  document.getElementById('register-form').classList.remove('was-validated');
+  document.getElementById('register-error').classList.add('d-none');
+  document.getElementById('register-success').classList.add('d-none');
+}
+
+function handleShowLogin(e) {
+  e.preventDefault();
+  document.getElementById('panel-register').classList.add('d-none');
+  document.getElementById('panel-login').classList.remove('d-none');
+}
+
+async function handleRegister(e) {
+  e.preventDefault();
+  const form = document.getElementById('register-form');
+  form.classList.add('was-validated');
+  if (!form.checkValidity()) return;
+
+  const body = {
+    username: document.getElementById('reg-username').value.trim(),
+    fullname: document.getElementById('reg-fullname').value.trim(),
+    email:    document.getElementById('reg-email').value.trim(),
+    password: document.getElementById('reg-password').value
+  };
+
+  const btn = document.getElementById('btn-register');
+  btn.disabled = true;
+  btn.textContent = 'Creando cuenta...';
+
+  const errEl = document.getElementById('register-error');
+  const okEl  = document.getElementById('register-success');
+  errEl.classList.add('d-none');
+  okEl.classList.add('d-none');
+
+  try {
+    await fetch(`${API_BASE}/auth/register`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(body)
+    }).then(async res => {
+      if (!res.ok) {
+        const data = await res.json().catch(() => null);
+        throw new Error(data?.message || `Error ${res.status}`);
+      }
+      return res.json();
+    });
+
+    okEl.textContent = '¡Cuenta creada correctamente! Ya puedes iniciar sesión.';
+    okEl.classList.remove('d-none');
+    form.reset();
+    form.classList.remove('was-validated');
+    setTimeout(() => handleShowLogin({ preventDefault: () => {} }), 2000);
+  } catch (err) {
+    errEl.textContent = `Error: ${err.message}`;
+    errEl.classList.remove('d-none');
+  } finally {
+    btn.disabled = false;
+    btn.textContent = 'Crear cuenta';
   }
 }
 
@@ -992,9 +1027,7 @@ function handleClearFilter() {
   loadTasks();
 }
 
-/* ================================================================
-   INICIALIZACIÓN
-   ================================================================ */
+// --- Inicialización ---
 
 async function initApp() {
   showApp();
@@ -1021,9 +1054,12 @@ async function initApp() {
 }
 
 function bindEvents() {
-  // Login / Logout
+  // Login / Logout / Registro
   document.getElementById('login-form').addEventListener('submit', handleLogin);
   document.getElementById('btn-logout').addEventListener('click', handleLogout);
+  document.getElementById('btn-show-register').addEventListener('click', handleShowRegister);
+  document.getElementById('btn-show-login').addEventListener('click', handleShowLogin);
+  document.getElementById('register-form').addEventListener('submit', handleRegister);
 
   // Navegación entre secciones
   document.querySelectorAll('#main-tabs .nav-link').forEach(btn => {
@@ -1061,9 +1097,7 @@ function bindEvents() {
   document.getElementById('profile-password-form').addEventListener('submit', handleChangePassword);
 }
 
-/* ================================================================
-   PUNTO DE ENTRADA
-   ================================================================ */
+// --- Arranque ---
 
 document.addEventListener('DOMContentLoaded', async () => {
   bindEvents();
