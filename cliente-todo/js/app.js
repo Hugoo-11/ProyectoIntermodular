@@ -678,7 +678,7 @@ function populateCategorySelect(categories, selectedId) {
     categories.forEach(cat => {
       const opt = document.createElement('option');
       opt.value = cat.id;
-      opt.textContent = cat.name;
+      opt.textContent = cat.title;
       if (selectedId && String(cat.id) === String(selectedId)) opt.selected = true;
       sel.appendChild(opt);
     });
