@@ -257,11 +257,11 @@ async function loadDashboard() {
   try {
     const d = await api.get('/dashboard');
     const cards = [
-      { label: 'Total',       value: d.total,     icon: 'fa-list',          color: 'primary' },
-      { label: 'Completadas', value: d.completed, icon: 'fa-circle-check',  color: 'success' },
-      { label: 'Pendientes',  value: d.pending,   icon: 'fa-clock',         color: 'warning' },
-      { label: 'Vencidas',    value: d.overdue,   icon: 'fa-circle-xmark',  color: 'danger'  },
-      { label: 'Importantes', value: d.important, icon: 'fa-star',          color: 'info'    },
+      { label: 'Total',       value: d.totalTareas,        icon: 'fa-list',          color: 'primary' },
+      { label: 'Completadas', value: d.tareasCompletadas,  icon: 'fa-circle-check',  color: 'success' },
+      { label: 'Pendientes',  value: d.tareasPendientes,   icon: 'fa-clock',         color: 'warning' },
+      { label: 'Vencidas',    value: d.tareasVencidas,     icon: 'fa-circle-xmark',  color: 'danger'  },
+      { label: 'Importantes', value: d.tareasImportantes,  icon: 'fa-star',          color: 'info'    },
     ];
     el.innerHTML = cards.map(c => `
       <div class="col-6 col-md-4 col-lg-2">
@@ -419,7 +419,7 @@ function renderAdminCategories() {
           ${cats.map(c => `
             <tr>
               <td class="text-muted small">${c.id}</td>
-              <td><i class="fa-solid fa-folder text-primary me-2"></i>${escapeHtml(c.name)}</td>
+              <td><i class="fa-solid fa-folder text-primary me-2"></i>${escapeHtml(c.title)}</td>
               <td class="text-end">
                 <button class="btn btn-outline-primary btn-sm me-1" onclick="openCategoryModal(${c.id})">
                   <i class="fa-solid fa-pen"></i>
@@ -443,7 +443,7 @@ function openCategoryModal(id) {
 
   if (id) {
     const cat = (state.adminCategories || []).find(c => c.id === id);
-    if (cat) document.getElementById('category-name').value = cat.name;
+    if (cat) document.getElementById('category-name').value = cat.title;
   }
 
   if (!categoryModal) categoryModal = new bootstrap.Modal(document.getElementById('category-modal'));
@@ -456,17 +456,17 @@ async function handleSaveCategory(e) {
   form.classList.add('was-validated');
   if (!form.checkValidity()) return;
 
-  const name = document.getElementById('category-name').value.trim();
+  const title = document.getElementById('category-name').value.trim();
   const base = getCategoryBase();
   const btn  = document.getElementById('btn-save-category');
   btn.disabled = true;
 
   try {
     if (state.editingCategoryId) {
-      await api.put(`${base}/${state.editingCategoryId}`, { name });
+      await api.put(`${base}/${state.editingCategoryId}`, { title });
       showAlert('Categoría actualizada.');
     } else {
-      await api.post(base, { name });
+      await api.post(base, { title });
       showAlert('Categoría creada.');
     }
     categoryModal.hide();
@@ -648,7 +648,7 @@ async function handleChangePassword(e) {
   }
 
   try {
-    await api.put('/user/password', { currentPassword, newPassword });
+    await api.put('/user/password', { oldPassword: currentPassword, newPassword });
     alertEl.className = 'alert alert-success mb-3';
     alertEl.textContent = 'Contraseña cambiada correctamente. Vuelve a iniciar sesión.';
     alertEl.classList.remove('d-none');
