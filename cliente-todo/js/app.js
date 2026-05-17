@@ -670,15 +670,18 @@ async function handleChangePassword(e) {
 let taskModal = null;
 
 function populateCategorySelect(categories, selectedId) {
-  ['task-category', 'filter-category'].forEach(id => {
+  const configs = [
+    { id: 'task-category',   emptyLabel: 'Sin categoría' },
+    { id: 'filter-category', emptyLabel: 'Todas'         }
+  ];
+  configs.forEach(({ id, emptyLabel }) => {
     const sel = document.getElementById(id);
-    const first = sel.options[0];
-    sel.innerHTML = '';
-    sel.appendChild(first);
-    categories.forEach(cat => {
+    if (!sel) return;
+    sel.innerHTML = `<option value="">${emptyLabel}</option>`;
+    (categories || []).forEach(cat => {
       const opt = document.createElement('option');
       opt.value = cat.id;
-      opt.textContent = cat.title;
+      opt.textContent = cat.title || cat.name || '';
       if (selectedId && String(cat.id) === String(selectedId)) opt.selected = true;
       sel.appendChild(opt);
     });
