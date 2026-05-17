@@ -185,7 +185,7 @@ function renderTaskCard(task) {
        </span>`
     : '<span class="text-muted">Sin fecha límite</span>';
 
-  const catName  = task.category ? task.category.name : 'Sin categoría';
+  const catName  = task.category ? task.category.title : 'Sin categoría';
   const tagsHtml = task.tags.length > 0
     ? task.tags.map(t => `<span class="badge bg-secondary me-1">${t.name}</span>`).join('')
     : '<span class="text-muted small">Sin etiquetas</span>';
@@ -685,6 +685,27 @@ function populateCategorySelect(categories, selectedId) {
   });
 }
 
+function renderTaskTagsCheckboxes(selectedIds = []) {
+  const container = document.getElementById('task-tags-container');
+  if (!state.tags || state.tags.length === 0) {
+    container.innerHTML = '<span class="text-muted small fst-italic">No tienes etiquetas. Créalas en la sección Etiquetas.</span>';
+    return;
+  }
+  container.innerHTML = state.tags.map(t => `
+    <div class="form-check form-check-inline mb-0">
+      <input class="form-check-input task-tag-check" type="checkbox"
+             id="task-tag-${t.id}" value="${t.id}"
+             ${selectedIds.includes(t.id) ? 'checked' : ''} />
+      <label class="form-check-label small" for="task-tag-${t.id}">
+        <span class="badge bg-secondary">${escapeHtml(t.name)}</span>
+      </label>
+    </div>`).join('');
+}
+
+function getSelectedTagIds() {
+  return [...document.querySelectorAll('.task-tag-check:checked')].map(el => Number(el.value));
+}
+
 function resetTaskForm() {
   const form = document.getElementById('task-form');
   form.reset();
@@ -693,11 +714,13 @@ function resetTaskForm() {
   state.editingTaskId = null;
   document.getElementById('task-modal-label').textContent = 'Nueva tarea';
   document.getElementById('btn-save-task').textContent = 'Guardar';
+  renderTaskTagsCheckboxes([]);
 }
 
 function openCreateModal() {
   resetTaskForm();
   populateCategorySelect(state.categories, null);
+  renderTaskTagsCheckboxes([]);
   if (!taskModal) taskModal = new bootstrap.Modal(document.getElementById('task-modal'));
   taskModal.show();
 }
@@ -715,6 +738,7 @@ function openEditModal(taskId) {
   document.getElementById('task-priority').value     = task.priority || '';
   document.getElementById('task-importante').checked = task.importante;
   populateCategorySelect(state.categories, task.category?.id);
+  renderTaskTagsCheckboxes((task.tags || []).map(t => t.id));
   if (!taskModal) taskModal = new bootstrap.Modal(document.getElementById('task-modal'));
   taskModal.show();
 }
@@ -849,14 +873,21 @@ async function handleSaveTask(e) {
   btn.innerHTML = '<span class="spinner-border spinner-border-sm me-1"></span>Guardando...';
 
   try {
+    let savedTask;
     if (state.editingTaskId) {
       const current = state.tasks.find(t => t.id === state.editingTaskId);
       body.completed = current ? current.completed : false;
-      await updateTask(state.editingTaskId, body);
+      savedTask = await updateTask(state.editingTaskId, body);
       showAlert('Tarea actualizada correctamente.');
     } else {
-      await createTask(body);
+      savedTask = await createTask(body);
       showAlert('Tarea creada correctamente.');
+    }
+    // Sincronizar etiquetas
+    const tagIds = getSelectedTagIds();
+    const taskId = savedTask?.id || state.editingTaskId;
+    if (taskId) {
+      await api.post(`/task/${taskId}/tags`, { tagIds });
     }
     taskModal.hide();
     await loadTasks();
@@ -970,12 +1001,17 @@ async function initApp() {
   state.role = await detectRole();
   applyRoleUI();
 
-  // Cargar categorías para el selector del modal de tarea
+  // Cargar categorías y etiquetas para el modal de tarea
   try {
     state.categories = await fetchCategories();
     populateCategorySelect(state.categories, null);
   } catch {
     state.categories = [];
+  }
+  try {
+    state.tags = await api.get('/tag');
+  } catch {
+    state.tags = [];
   }
 
   await loadTasks();

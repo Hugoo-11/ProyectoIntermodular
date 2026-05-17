@@ -207,7 +207,7 @@
                   </div>
                   <div class="mb-3">
                     <label class="form-label small">Nueva contraseña</label>
-                    <input type="password" class="form-control" id="profile-new-password" required minlength="6" />
+                    <input type="password" class="form-control" id="profile-new-password" required minlength="5" />
                     <div class="invalid-feedback">Mínimo 6 caracteres.</div>
                   </div>
                   <div class="mb-3">
@@ -294,6 +294,12 @@
                   <label class="form-check-label" for="task-importante">
                     <i class="fa-solid fa-star text-warning me-1"></i>Marcar como importante
                   </label>
+                </div>
+              </div>
+              <div class="col-12">
+                <label class="form-label">Etiquetas</label>
+                <div id="task-tags-container" class="d-flex flex-wrap gap-2 p-2 border rounded" style="min-height:38px">
+                  <span class="text-muted small fst-italic" id="task-tags-empty">Cargando etiquetas...</span>
                 </div>
               </div>
             </div>
