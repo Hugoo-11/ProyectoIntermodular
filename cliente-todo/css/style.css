@@ -1,0 +1,96 @@
+/* ── Variables ─────────────────────────────────────── */
+:root {
+  --priority-alta:  #dc3545;
+  --priority-media: #fd7e14;
+  --priority-baja:  #198754;
+}
+
+/* ── Login ─────────────────────────────────────────── */
+#login-section {
+  background: linear-gradient(135deg, #0d6efd 0%, #0a58ca 100%);
+  min-height: 100vh;
+}
+
+.login-card {
+  width: 100%;
+  max-width: 400px;
+  border-radius: 1rem;
+}
+
+/* ── Filtros: siempre visible en escritorio ────────── */
+@media (min-width: 992px) {
+  #filter-collapse {
+    display: block !important;
+  }
+}
+
+/* ── Task cards ────────────────────────────────────── */
+.task-card {
+  border-left: 4px solid #dee2e6;
+  transition: box-shadow 0.15s ease;
+}
+
+.task-card:hover {
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.task-card.priority-alta  { border-left-color: var(--priority-alta); }
+.task-card.priority-media { border-left-color: var(--priority-media); }
+.task-card.priority-baja  { border-left-color: var(--priority-baja); }
+.task-card.completed-task { opacity: 0.65; }
+
+.task-title {
+  font-weight: 600;
+  font-size: 1rem;
+  word-break: break-word;
+}
+
+.task-title.completed {
+  text-decoration: line-through;
+  color: #6c757d;
+}
+
+/* Botones de tarea en móvil: tamaño completo */
+@media (max-width: 575px) {
+  .task-actions {
+    display: flex;
+    gap: 0.5rem;
+    width: 100%;
+  }
+  .task-actions .btn {
+    flex: 1;
+  }
+}
+
+/* ── Priority badges ───────────────────────────────── */
+.badge-alta  { background-color: var(--priority-alta)  !important; }
+.badge-media { background-color: var(--priority-media) !important; }
+.badge-baja  { background-color: var(--priority-baja)  !important; }
+
+/* ── Deadline ──────────────────────────────────────── */
+.deadline-overdue {
+  color: var(--priority-alta);
+  font-weight: 600;
+}
+
+/* ── Alert container ───────────────────────────────── */
+#alert-container .alert {
+  animation: fadeIn 0.3s ease;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(-8px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* ── Mejoras móvil generales ───────────────────────── */
+@media (max-width: 575px) {
+  .card-body {
+    padding: 0.75rem;
+  }
+
+  .navbar {
+    padding-top: 0.4rem;
+    padding-bottom: 0.4rem;
+  }
+}
