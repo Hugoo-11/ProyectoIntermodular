@@ -103,7 +103,6 @@ function showSection(name) {
   });
   state.currentSection = name;
 
-  // Cargar datos de la sección al entrar
   if (name === 'dashboard')   loadDashboard();
   if (name === 'tags')        loadTags();
   if (name === 'categories')  loadAdminCategories();
@@ -374,7 +373,6 @@ async function loadAdminCategories() {
     const base = getCategoryBase();
     state.adminCategories = await api.get(base);
     renderAdminCategories();
-    // Refrescar también el selector de categorías en el modal de tarea
     state.categories = await fetchCategories();
     populateCategorySelect(state.categories, null);
   } catch (err) {
@@ -630,7 +628,6 @@ async function handleChangePassword(e) {
     alertEl.classList.remove('d-none');
     form.reset();
     form.classList.remove('was-validated');
-    // Actualizar credenciales guardadas
     saveAuth(state.auth.username, newPassword);
   } catch (err) {
     alertEl.className = 'alert alert-danger mb-3';
@@ -921,7 +918,6 @@ async function handleSaveTask(e) {
       savedTask = await createTask(body);
       showAlert('Tarea creada correctamente.');
     }
-    // Sincronizar etiquetas
     const tagIds = getSelectedTagIds();
     const taskId = savedTask?.id || state.editingTaskId;
     if (taskId) {
@@ -1033,11 +1029,9 @@ async function initApp() {
   showApp();
   setLoadingTaskList();
 
-  // Detectar rol
   state.role = await detectRole();
   applyRoleUI();
 
-  // Cargar categorías y etiquetas para el modal de tarea
   try {
     state.categories = await fetchCategories();
     populateCategorySelect(state.categories, null);
@@ -1054,19 +1048,16 @@ async function initApp() {
 }
 
 function bindEvents() {
-  // Login / Logout / Registro
   document.getElementById('login-form').addEventListener('submit', handleLogin);
   document.getElementById('btn-logout').addEventListener('click', handleLogout);
   document.getElementById('btn-show-register').addEventListener('click', handleShowRegister);
   document.getElementById('btn-show-login').addEventListener('click', handleShowLogin);
   document.getElementById('register-form').addEventListener('submit', handleRegister);
 
-  // Navegación entre secciones
   document.querySelectorAll('#main-tabs .nav-link').forEach(btn => {
     btn.addEventListener('click', () => showSection(btn.dataset.section));
   });
 
-  // Tareas
   document.getElementById('btn-new-task').addEventListener('click', openCreateModal);
   document.getElementById('task-form').addEventListener('submit', handleSaveTask);
   document.getElementById('btn-confirm-delete').addEventListener('click', confirmDelete);
@@ -1079,25 +1070,15 @@ function bindEvents() {
   });
   document.getElementById('toggle-autorefresh').addEventListener('change', e => handleAutoRefresh(e.target.checked));
 
-  // Filtros
   document.getElementById('btn-apply-filter').addEventListener('click', handleApplyFilter);
   document.getElementById('btn-clear-filter').addEventListener('click', handleClearFilter);
   document.getElementById('filter-title').addEventListener('keydown', e => { if (e.key === 'Enter') handleApplyFilter(); });
 
-  // Etiquetas
   document.getElementById('tag-form').addEventListener('submit', handleSaveTag);
-
-  // Categorías
   document.getElementById('category-form').addEventListener('submit', handleSaveCategory);
-
-  // Usuarios
   document.getElementById('user-form').addEventListener('submit', handleSaveUser);
-
-  // Perfil
   document.getElementById('profile-password-form').addEventListener('submit', handleChangePassword);
 }
-
-// --- Arranque ---
 
 document.addEventListener('DOMContentLoaded', async () => {
   bindEvents();

@@ -1,11 +1,11 @@
-/* ── Variables ─────────────────────────────────────── */
+/* Variables de color por prioridad */
 :root {
   --priority-alta:  #dc3545;
   --priority-media: #fd7e14;
   --priority-baja:  #198754;
 }
 
-/* ── Login ─────────────────────────────────────────── */
+/* Login */
 #login-section {
   background: linear-gradient(135deg, #0d6efd 0%, #0a58ca 100%);
   min-height: 100vh;
@@ -17,14 +17,14 @@
   border-radius: 1rem;
 }
 
-/* ── Filtros: siempre visible en escritorio ────────── */
+/* Panel de filtros: siempre visible en escritorio */
 @media (min-width: 992px) {
   #filter-collapse {
     display: block !important;
   }
 }
 
-/* ── Task cards ────────────────────────────────────── */
+/* Tarjetas de tarea */
 .task-card {
   border-left: 4px solid #dee2e6;
   transition: box-shadow 0.15s ease;
@@ -50,7 +50,7 @@
   color: #6c757d;
 }
 
-/* Botones de tarea en móvil: tamaño completo */
+/* Botones de tarea en móvil */
 @media (max-width: 575px) {
   .task-actions {
     display: flex;
@@ -62,18 +62,18 @@
   }
 }
 
-/* ── Priority badges ───────────────────────────────── */
+/* Badges de prioridad */
 .badge-alta  { background-color: var(--priority-alta)  !important; }
 .badge-media { background-color: var(--priority-media) !important; }
 .badge-baja  { background-color: var(--priority-baja)  !important; }
 
-/* ── Deadline ──────────────────────────────────────── */
+/* Fecha vencida */
 .deadline-overdue {
   color: var(--priority-alta);
   font-weight: 600;
 }
 
-/* ── Alert container ───────────────────────────────── */
+/* Alertas con animacion */
 #alert-container .alert {
   animation: fadeIn 0.3s ease;
 }
@@ -83,7 +83,7 @@
   to   { opacity: 1; transform: translateY(0); }
 }
 
-/* ── Mejoras móvil generales ───────────────────────── */
+/* Ajustes movil */
 @media (max-width: 575px) {
   .card-body {
     padding: 0.75rem;
